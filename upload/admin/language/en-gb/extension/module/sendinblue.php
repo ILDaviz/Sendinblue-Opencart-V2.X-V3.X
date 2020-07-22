@@ -1,6 +1,6 @@
 <?php
 // Heading
-$_['heading_title']       = '<img src="view/image/sendinblueicon.png" style="vertical-align: top;" /> SendinBlue';
+$_['heading_title']       = '<img src="https://it.sendinblue.com/wp-content/themes/sendinblue2019/assets/favicon/apple-touch-icon.png" style="width: 20px;vertical-align: top;" /> SendinBlue';
 $_['heading_title_text']  = 'SendinBlue';
 
 // Text

@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <modification>
-
     <id>SendInBlue</id>
     <name>SendInBlue</name>
     <version>300.1</version>
@@ -75,6 +75,4 @@
 			]]></add>
         </operation>
     </file>
-
-
 </modification>

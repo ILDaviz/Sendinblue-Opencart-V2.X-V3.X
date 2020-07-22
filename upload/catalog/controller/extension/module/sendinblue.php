@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors',1);
 class ControllerExtensionModuleSendinBlue extends Controller {
 	/*	
 	// http://example.com/index.php?route=extension/module/sendinblue&email=john@doe.com&firstname=john&lastname=doe

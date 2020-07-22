@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors',1);
 class ControllerExtensionModuleSendinBlue extends Controller {
 	private $error = array();
 	private $_api_url = 'https://api.sendinblue.com/v2.0';
@@ -536,8 +535,9 @@ class ControllerExtensionModuleSendinBlue extends Controller {
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'sendinblue_mail_order_alert'");
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'sendinblue_mail_order_alert', `trigger` = '	catalog/model/checkout/order/addOrderHistory/before', `action` = 'mail/sendinblue_order/alert', `status` = '1', `sort_order` = '0'");
 		// Disable default events for order. Re-enable on uninstall
-		$this->db->query("UPDATE `" . DB_PREFIX . "event` SET status = 0 WHERE `code` = 'mail_order_add'");
-		$this->db->query("UPDATE `" . DB_PREFIX . "event` SET status = 0 WHERE `code` = 'mail_order_alert'");
+        // Acquavivastore -- custom - 22-07-2020
+		// $this->db->query("UPDATE `" . DB_PREFIX . "event` SET status = 0 WHERE `code` = 'mail_order_add'");
+		// $this->db->query("UPDATE `" . DB_PREFIX . "event` SET status = 0 WHERE `code` = 'mail_order_alert'");
 	}
 
 	public function uninstall() {
