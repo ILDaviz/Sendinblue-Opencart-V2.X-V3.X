@@ -10,6 +10,7 @@ image/cache/
 system/cache/
 system/logs/
 .idea/
+.zip
 old_verison
 
 system/storage/
