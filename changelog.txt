@@ -1,2 +1,0 @@
- v3.0.0.3 - 2019/02/19
-- Added cart_updated if cart_created was already called and there are products in the cart
