@@ -1,5 +1,6 @@
 <?php
 class ControllerExtensionModuleSendinBlue extends Controller {
+
 	private $error = array();
 	private $_api_url = 'https://api.sendinblue.com/v2.0';
 	private $_api_key = '';
