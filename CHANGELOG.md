@@ -1,4 +1,8 @@
 # Module Version
+
+## V1.0.3
+* Add edit event order_completed end add categoies list
+
 ## V1.0.2
 * Add detail products if order is completed
 * Edit track page add url end name of page

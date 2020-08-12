@@ -339,6 +339,7 @@ class ControllerExtensionModuleSendinBlue extends Controller {
 
         $this->load->model('extension/module/sendinblue');
         $this->load->model('catalog/product');
+        $this->load->model('catalog/category');
         $this->load->model('account/order');
         $this->load->model('checkout/order');
 
@@ -372,8 +373,8 @@ class ControllerExtensionModuleSendinBlue extends Controller {
             )
         );
 
-        $products = array();
         // Extract product cart
+        $products = [];
         foreach ($this->model_account_order->getOrderProducts($order_id) as $product) {
             $product_info = $this->model_catalog_product->getProduct($product['product_id']);
             $products[] = array(
@@ -387,6 +388,23 @@ class ControllerExtensionModuleSendinBlue extends Controller {
         }
 
         $data['eventdata']['data']['products'] = $products;
+
+        // Extract category cart
+        $categories_list = [];
+        foreach ($this->model_account_order->getOrderProducts($order_id) as $product) {
+            $categories = $this->model_catalog_product->getCategories($product['product_id']);
+            foreach ($categories as $category ) {
+                $category_data     = $this->model_catalog_category->getCategory( $category['category_id'] );
+                $str               = str_replace( " ", "_", $category_data['name'] );
+                $categories_list[] = array(
+                    "id"   => $category['category_id'],
+                    "name" => strtolower( $str )
+                );
+
+            }
+        }
+
+        $data['eventdata']['data']['categories'] = $categories_list;
 
         $data['eventdata']['data']['Billing_Details'] = array(
             'billing_FIRST_NAME' => $order_info['payment_firstname'],
