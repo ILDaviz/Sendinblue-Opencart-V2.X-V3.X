@@ -376,6 +376,7 @@ class ControllerExtensionModuleSendinBlue extends Controller {
         // Extract product cart
         foreach ($this->model_account_order->getOrderProducts($order_id) as $product) {
             $product_info = $this->model_catalog_product->getProduct($product['product_id']);
+            $this->trackEventCategory($product['product_id'], $order_id);
             $products[] = array(
                 'id' => $product['product_id'],
                 'name' => $product_info['name'],
@@ -442,6 +443,72 @@ class ControllerExtensionModuleSendinBlue extends Controller {
         );
 
         $this->curlpost($data, 'trackEvent');
+    }
+
+    public function trackEventCategory($product_id, $order_id) {
+
+        if(!isset($product_id) || !isset($order_id)){
+            return;
+        }
+
+        $this->load->model('extension/module/sendinblue');
+        $this->load->model('catalog/product');
+        $this->load->model('catalog/category');
+        $this->load->model('account/order');
+        $this->load->model('checkout/order');
+
+        // Get category
+
+        $categories = $this->model_catalog_product->getCategories($product_id);
+
+        foreach ($categories as $category ){
+
+            $category_data = $this->model_catalog_category->getCategory($category['category_id']);
+
+            $str = str_replace(" ", "_", $category_data['name']);
+
+            $str = strtolower($str);
+
+            $event = 'order_completed_category_' . $str;
+
+            if ($this->customer->isLogged() && $this->customer->getNewsletter()) {
+                $email = $this->customer->getEmail();
+            } elseif (isset($this->session->data['guest']['email'])) {
+                $email = $this->session->data['guest']['email'];
+            } else {
+                return;
+            }
+
+            $data = array(
+                'email' => $email,
+                'event' => $event,
+                'properties' => array(
+                    'FIRSTNAME' => $this->customer->getFirstName(),
+                    'LASTNAME' => $this->customer->getLastName(),
+                ),
+                'eventdata' => array(
+                    'id' => $this->GUID(),
+                    'data' => array()
+                )
+            );
+
+            $products = array();
+            // Extract product cart
+            foreach ($this->model_account_order->getOrderProducts($order_id) as $product) {
+                $product_info = $this->model_catalog_product->getProduct($product['product_id']);
+                $products[] = array(
+                    'id' => $product['product_id'],
+                    'name' => $product_info['name'],
+                    'quantity' => $product['quantity'],
+                    'price' => $product['price'],
+                    'image' => HTTP_SERVER . 'image/' . $product_info['image'],
+                    'url' => str_replace('&amp;', '&', $this->url->link('product/product', 'product_id=' . $product['product_id']))
+                );
+            }
+
+            $data['eventdata']['data']['products'] = $products;
+            $this->curlpost($data, 'trackEvent');
+        }
     }
 
     public function trackEventAddToCart() {
