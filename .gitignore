@@ -11,6 +11,7 @@ system/cache/
 system/logs/
 .idea/
 .zip
+*.zip
 old_verison
 
 system/storage/
