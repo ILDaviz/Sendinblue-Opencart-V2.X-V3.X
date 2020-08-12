@@ -295,31 +295,34 @@ class ControllerExtensionModuleSendinBlue extends Controller {
             $server = HTTP_SERVER;
         }
         // Check typology page
-        switch ($typology_page){
-            case "product/product":
+        if ($typology_page == "product/product"){
+            if (isset($this->request->get['path'])){
                 $url = $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $this->request->get['product_id']);
-                $data = array(
-                    'email' => $email,
-                    'page' => $this->document->getTitle(),
-                    'ma_title' => $this->document->getTitle(),
-                    'ma_url' => $url,
-                    'ma_path' => str_replace($server, $url)
-                );
+            } else {
+                $url = $this->url->link('product/product', 'product_id=' . $this->request->get['product_id']);
+            }
+            $data = array(
+                'email' => $email,
+                'page' => $this->document->getTitle(),
+                'ma_title' => $this->document->getTitle(),
+                'ma_url' => $url,
+                'ma_path' => str_replace($server, "/", $url)
+            );
 
-                $this->curlpost($data, 'trackPage');
-            case "product/category":
-                $url = $this->url->link('product/category', 'path=' . $this->request->get['path']);
-                $data = array(
-                    'email' => $email,
-                    'page' => $this->document->getTitle(),
-                    'ma_title' => $this->document->getTitle(),
-                    'ma_url' => $url,
-                    'ma_path' => str_replace($server,"/", $url)
-                );
+            $this->curlpost($data, 'trackPage');
+        } elseif ($typology_page == "product/category"){
+            $url = $this->url->link('product/category', 'path=' . $this->request->get['path']);
+            $data = array(
+                'email' => $email,
+                'page' => $this->document->getTitle(),
+                'ma_title' => $this->document->getTitle(),
+                'ma_url' => $url,
+                'ma_path' => str_replace($server,"/", $url)
+            );
 
-                $this->curlpost($data, 'trackPage');
-            default:
-                return;
+            $this->curlpost($data, 'trackPage');
+        } else {
+            return;
         }
     }
 
