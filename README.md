@@ -7,11 +7,12 @@
 ---
 ### Installation
 ```text
-- This is a plug and play module
+- This is a plug and play module;
 - Install file .ocmod.zip on Extensions/Installer; 
 - Reload on Extensions/Modifications;
-- Enable module end add request key
-- PHP >= 5.6
+- Go to in extension/extension line module;
+- Enable module end add request key;
+- PHP >= 5.6;
 ```
 ### Fully Automate Your Email Marketing With The New Opencart Sendinblue Plug-In
 SendinBlue-users that operate OpenCart webshops have been waiting on a decent integration of the service within OpenCart for a long time. With the new SendinBlue OpenCart plug-in, the wait is finally over. The new SendinBlue plug-in has already proven to drastically improve the usability of SendinBlue for OpenCart users.
