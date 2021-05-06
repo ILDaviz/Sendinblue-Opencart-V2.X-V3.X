@@ -10,7 +10,7 @@
 - This is a plug and play module;
 - Install file .ocmod.zip on Extensions/Installer; 
 - Reload on Extensions/Modifications;
-- Go to in extension/extension line module;
+- Go to extensions/extensions line modules;
 - Enable module end add request key;
 - PHP >= 5.6;
 ```
