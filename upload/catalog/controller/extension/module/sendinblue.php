@@ -326,11 +326,45 @@ class ControllerExtensionModuleSendinBlue extends Controller {
         }
     }
 
-    // Ordine completato
+    public function trackEventChangeOrderStatus(&$route, &$args) {
+
+        if (isset($args[0])) {
+            $order_id = $args[0];
+        } else {
+            $order_id = 0;
+        }
+
+        if (isset($args[1])) {
+            $order_status_id = $args[1];
+        } else {
+            $order_status_id = 0;
+        }
+
+        $order_info = $this->model_checkout_order->getOrder($order_id);
+        $order_status_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_status WHERE order_status_id = '" . (int)$order_status_id . "' AND language_id = '" . (int)$order_info['language_id'] . "'");
+
+        if ($order_status_query->num_rows) {
+            $event = 'event_' . strtolower(str_replace(' ', '_', $order_status_query->row['name']));
+        } else {
+            $event = 'event_send_update_status';
+        }
+
+        $data = array(
+            'email' => $order_info['email'],
+            'event' => $event,
+            'properties' => array(
+                'FIRSTNAME' => $order_info['firstname'],
+                'LASTNAME' => $order_info['lastname'],
+            )
+        );
+
+        $this->curlpost($data, 'trackEvent');
+    }
+
     public function trackEventOrderConfirmation(&$route, &$args, &$output) {
         file_put_contents(DIR_LOGS . 'trackEventOrderConf.txt', print_r($args,1));
 
-        $event = 'order_completed';
+        $event = 'new_order_coming';
 
         if ($this->customer->isLogged() && $this->customer->getNewsletter()) {
             $email = $this->customer->getEmail();
