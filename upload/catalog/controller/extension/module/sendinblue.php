@@ -340,6 +340,12 @@ class ControllerExtensionModuleSendinBlue extends Controller {
             $order_status_id = 0;
         }
 
+        $this->load->model('extension/module/sendinblue');
+        $this->load->model('catalog/product');
+        $this->load->model('catalog/category');
+        $this->load->model('account/order');
+        $this->load->model('checkout/order');
+
         $order_info = $this->model_checkout_order->getOrder($order_id);
         $order_status_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_status WHERE order_status_id = '" . (int)$order_status_id . "' AND language_id = '" . (int)$order_info['language_id'] . "'");
 
