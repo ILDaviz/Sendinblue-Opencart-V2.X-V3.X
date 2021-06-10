@@ -3,7 +3,7 @@ class ControllerExtensionModuleSendinBlue extends Controller {
     private $error = array();
     private $_api_url = 'https://api.sendinblue.com/v2.0';
     private $_api_key = '';
-    private $version = "1.0.2";
+    private $version = "1.0.4";
 
     public function index() {
 
