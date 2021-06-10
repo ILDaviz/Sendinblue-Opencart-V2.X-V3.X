@@ -349,13 +349,116 @@ class ControllerExtensionModuleSendinBlue extends Controller {
             $event = 'event_send_update_status';
         }
 
+        $order_totals = $this->model_checkout_order->getOrderTotals($order_id);
+
+        $shipping = 0;
+        $subtotal = 0;
+        $tax = 0;
+        $discount = 0;
+        foreach ($order_totals as $t) {
+            if ($t['code'] == 'shipping') { $shipping = $t['value']; }
+            if ($t['code'] == 'sub_total') { $subtotal = $t['value']; }
+            if ($t['code'] == 'tax') { $tax += $t['value']; }
+            if ($t['code'] == 'coupon') { $discount = $t['value']; }
+        }
+
         $data = array(
             'email' => $order_info['email'],
             'event' => $event,
             'properties' => array(
                 'FIRSTNAME' => $order_info['firstname'],
                 'LASTNAME' => $order_info['lastname'],
+            ),
+            'eventdata' => array(
+                'id' => $this->GUID(),
+                'data' => array()
             )
+        );
+
+        // Extract product cart
+        $products = [];
+        foreach ($this->model_account_order->getOrderProducts($order_id) as $product) {
+            $product_info = $this->model_catalog_product->getProduct($product['product_id']);
+            $products[] = array(
+                'id' => $product['product_id'],
+                'name' => $product_info['name'],
+                'quantity' => $product['quantity'],
+                'price' => $product['price'],
+                'image' => HTTP_SERVER . 'image/' . $product_info['image'],
+                'url' => str_replace('&amp;', '&', $this->url->link('product/product', 'product_id=' . $product['product_id']))
+            );
+        }
+
+        $data['eventdata']['data']['products'] = $products;
+
+        // Extract category cart
+        $categories_list = [];
+        foreach ($this->model_account_order->getOrderProducts($order_id) as $product) {
+            $categories = $this->model_catalog_product->getCategories($product['product_id']);
+            foreach ($categories as $category ) {
+                $category_data     = $this->model_catalog_category->getCategory( $category['category_id'] );
+                $str               = str_replace( " ", "_", $category_data['name'] );
+                $categories_list[] = array(
+                    "id"   => $category['category_id'],
+                    "name" => strtolower( $str )
+                );
+
+            }
+        }
+
+        $data['eventdata']['data']['categories'] = $categories_list;
+
+        $data['eventdata']['data']['Billing_Details'] = array(
+            'billing_FIRST_NAME' => $order_info['payment_firstname'],
+            'billing_LAST_NAME' => $order_info['payment_lastname'],
+            'billing_COMPANY ' => $order_info['payment_company'],
+            'billing_ADDRESS_1' => $order_info['payment_address_1'],
+            'billing_ADDRESS_2' => $order_info['payment_address_2'],
+            'billing_CITY' => $order_info['payment_city'],
+            'billing_STATE' => $order_info['payment_zone'],
+            'billing_POSTCODE' => $order_info['payment_postcode'],
+            'billing_COUNTRY' => $order_info['payment_country'],
+            'billing_PHONE' => $order_info['telephone'],
+            'billing_EMAIL' => $order_info['email']
+        );
+
+        $data['eventdata']['data']['Shipping_Details'] = array(
+            'shipping_FIRST_NAME' => $order_info['shipping_firstname'],
+            'shipping_LAST_NAME' => $order_info['shipping_lastname'],
+            'shipping_COMPANY ' => $order_info['shipping_company'],
+            'shipping_ADDRESS_1' => $order_info['shipping_address_1'],
+            'shipping_ADDRESS_2' => $order_info['shipping_address_2'],
+            'shipping_CITY' =>$order_info['shipping_city'] ,
+            'shipping_STATE' => $order_info['shipping_zone'],
+            'shipping_POSTCODE' => $order_info['shipping_postcode'],
+            'shipping_COUNTRY' => $order_info['shipping_country'],
+            'shipping_METHOD_TITLE' => $order_info['shipping_method']
+        );
+
+        $data['eventdata']['data']['Order_Details'] = array(
+            'order_ID' => $order_info['order_id'],
+            'order_KEY' => $order_info['order_id'],
+            'order_DISCOUNT ' => $discount ,
+            'order_TAX' => $tax,
+            'order_SHIPPING_TAX' => 0,
+            'order_SHIPPING' => $shipping,
+            'order_PRICE' => 0,
+            'order_DATE' => $order_info['date_added'],
+            'order_SUBTOTAL' => $subtotal,
+            'order_DOWNLOAD_LINK' => ''
+        );
+
+        $data['eventdata']['data']['Miscalleneous'] = array(
+            'cart_DISCOUNT' => '0',
+            'cart_DISCOUNT_TAX' => '0',
+            'customer_USER ' => $order_info['customer_id'],
+            'payment_METHOD' => $order_info['payment_code'],
+            'payment_METHOD_TITLE' => $order_info['payment_method'],
+            'customer_IP_ADDRESS' => $order_info['ip'],
+            'customer_USER_AGENT' => $order_info['user_agent'],
+            'user_LOGIN' => '',
+            'user_PASSWORD' => '',
+            'refunded_AMOUNT' => 0
         );
 
         $this->curlpost($data, 'trackEvent');
