@@ -534,6 +534,7 @@ class ControllerExtensionModuleSendinBlue extends Controller {
         $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'sendinblue_mail_order_add', `trigger` = 'catalog/model/checkout/order/addOrderHistory/before', `action` = 'mail/sendinblue_order', `status` = '1', `sort_order` = '0'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'sendinblue_mail_order_alert'");
         $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'sendinblue_mail_order_alert', `trigger` = '	catalog/model/checkout/order/addOrderHistory/before', `action` = 'mail/sendinblue_order/alert', `status` = '1', `sort_order` = '0'");
+        $this->db->query("INSERT INTO `" . DB_PREFIX . "event` SET `code` = 'sendinblue_track_order_change', `trigger` = 'catalog/model/checkout/order/addOrderHistory/before', `action` = 'extension/module/sendinblue/trackEventChangeOrderStatus', `status` = '1', `sort_order` = '0'");
     }
 
     public function uninstall() {
@@ -551,6 +552,7 @@ class ControllerExtensionModuleSendinBlue extends Controller {
         $this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'sendinblue_track_uc'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'sendinblue_track_rfc'");
         $this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'sendinblue_track_order_conf'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "event` WHERE `code` = 'sendinblue_track_order_change'");
     }
 
     public function ajaxsave() {
